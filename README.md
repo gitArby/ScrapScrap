@@ -1,4 +1,5 @@
 # ⚙️ ScrapScrap
+# Adam Macků Zdeněk Vápeník
 
 2D steampunková plošinovka vytvářená jako maturitní a výukový projekt.  
 Hlavní důraz je kladen na plynulé skákání, mechanickou atmosféru a stylovou grafiku.
