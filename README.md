@@ -12,6 +12,8 @@ Hra je kompletně vytvořena v HTML5 Canvas a čistém JavaScriptu s vlastní na
 2. [Game Design](02_game_design.md)
 3. [Grafika](03_grafika.md)
 4. [Audio](04_audio.md)
+5. [Koncepty a vývoj](05_koncepty.md)
+6. [Hratelné Demo](06_demo.md)
 
 ## Spuštění hry
 - Klonujte tento repozitář.
