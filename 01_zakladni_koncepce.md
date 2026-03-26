@@ -1,41 +1,19 @@
-# 01 Základní koncepce
+# Kapitola 1: Základní koncepce
 
 ## Název hry
-**Neon Rebellion**
+**ScrapScrap**
 
 ## Žánr
-2D hack and slash, akční, futuristické cyberpunk prostředí
+2D logická plošinovka (Side-scrolling Platformer).
 
-## Krátký popis
-Hráč se probouzí v podzemní laboratoři jako experimentální voják s kybernetickými implantáty.  
-Jeho cílem je uniknout z megakorporace, která ho vytvořila, osvobodit další zajatce a svrhnout systém.
+## Téma a zasazení
+Hra se odehrává v opuštěné industriální továrně s výraznými steampunkovými prvky. Prostředí dominuje mosaz, bronz, měď, pára a především gigantická ozubená kola, která slouží jako hlavní platformní prvek. Celková atmosféra je temnější, mechanická, ale graficky přístupná a čitelná.
 
-Styl:
-- Dynamické melee souboje
-- Rychlý pohyb, dash, parry
-- Vizuální neon efekty, temné město, robotické nepřátelé
+## Cíl hry
+Cílem hráče je navigovat malého robota přes záludnosti továrny (propasti a střílející věže) z levé strany mapy až k zelené vlajce na konci úrovně.
 
-## Cílová platforma
-- PC (Windows)
-- potenciálně Web export / itch.io
+## Cílová skupina
+Hra je určena pro casual hráče i fanoušky klasických retro plošinovek (např. Mario bros mechaniky), kteří mají rádi výzvu v podobě načasování skoků a zvládání herní fyziky (zde v podobě jízdy po rotujících kolech). 
 
-## Technologie
-- Engine: **Godot 4 (2D)**
-- Assety: Pixel-art + post-neon efekty
-
-## Ovládání
-- WASD pohyb
-- J / K útoky / combo
-- L dash / úskok
-- E interakce
-
-## Hráčská fantasy
-- Být rychlý, smrtící, efektivní
-- Pocit "Kyber-ninja v budoucím městě"
-- Stylové ničení nepřátel pomocí chain-comb
-
-## Inspirace
-- Katana Zero
-- Dead Cells
-- Ruiner
-- Ghostrunner
+## Příběh (Lore)
+Robot se probouzí jako vadný prototyp (Scrap) v obrovském továrním komplexu, který ho má sešrotovat. Musí uprchnout přes výrobní linky a staré mechanismy, aby unikl svému osudu.
