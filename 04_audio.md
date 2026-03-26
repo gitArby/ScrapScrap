@@ -1,11 +1,9 @@
 # Kapitola 4: Audio a ozvučení
 
-## Hudební doprovod
-Do hry byla implementována atmosférická hudební smyčka (`music.mp3`). Hudba má za cíl podpořit industriální a napínavou atmosféru průchodu opuštěnou továrnou. 
+Atmosféru i samotnou hratelnost (tzv. "Game Feel") silně podtrhuje audio složka, která dává hráči okamžitou zpětnou vazbu.
 
-## Technická implementace zvuku
-Zvuk je v projektu řešen pomocí standardního objektu `Audio` v JavaScriptu.
-- **Nastavení:** Zvuk se načítá do paměti již při startu aplikace a je u něj aktivována vlastnost `loop = true`, což zajišťuje jeho plynulé opakování.
-- **Hlasitost:** Vzhledem k tomu, že hudba nesmí přehlušit případné budoucí zvukové efekty (SFX) a nesmí být pro hráče nepříjemná, je programově ztlumena na 8 % celkové hlasitosti systému (`gameMusic.volume = 0.08`).
-- **Ovládání přehrávání:** Moderní prohlížeče blokují automatické spuštění zvuku před interakcí uživatele (Autoplay policy). Proto je volání metody `gameMusic.play()` svázáno s kliknutím myši na tlačítko "PLAY" v hlavním menu.
-- **Zastavení hudby:** Byla vytvořena vlastní funkce `stopMusic()`, která využívá metody `pause()` a vynulování času `currentTime = 0`. Tato funkce se zavolá vždy, když hráč zemře, úroveň dokončí, nebo se přepne do sekce Credits. V menu tak vládne klid a hudba se znovu spustí až s novým pokusem o hraní.
+## Zvukové vrstvy
+- **Hudební doprovod (`music.mp3`):** Tematická industriální smyčka s utlumenou hlasitostí, aby nerušila zvukové efekty a tvořila podkres. V menu a závěrečných obrazovkách se automaticky ztlumí.
+- **Skok (`jump.mp3`):** Dynamický zvukový efekt, který se přehraje při každém odrazu od země, při dvojskoku ve vzduchu nebo po úspěšném odrazu od hlavy nepřítele. Zvuk se před přehráním vždy resetuje na začátek (`currentTime = 0`), aby se nezadrhával při rychlých po sobě jdoucích akcích.
+- **Zranění (`damage.mp3`):** Krátký, úderný zvuk indikující ztrátu života nebo štítu (zmenšení robota / ztráta aury).
+- **Game Over (`gameover.mp3`):** Dramatický závěrečný zvuk, který nahrazuje běžný zvuk zranění v případě, že hráč přijde o svůj poslední život nebo spadne mimo hrací mapu. Okamžitě ukončuje background hudbu.
