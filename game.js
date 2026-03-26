@@ -35,19 +35,46 @@ function assetLoaded() {
     }
 }
 
-// --- AUDIO ---
+// --- AUDIO A NASTAVENÍ HLASITOSTI ---
+let musicLevel = 10; // 0 až 10 (10 = 100%)
+let sfxLevel = 10;   // 0 až 10 (10 = 100%)
+
 const gameMusic = new Audio('music.mp3');
 gameMusic.loop = true;
-gameMusic.volume = 0.08;
 
 const jumpSound = new Audio('jump.mp3');
-jumpSound.volume = 0.2;
-
 const damageSound = new Audio('damage.mp3');
-damageSound.volume = 0.3;
-
 const gameOverSound = new Audio('gameover.mp3');
-gameOverSound.volume = 0.4;
+
+// Funkce pro aktualizaci reálné hlasitosti v objektech
+function updateVolumes() {
+    gameMusic.volume = (musicLevel / 10) * 0.08;
+    jumpSound.volume = (sfxLevel / 10) * 0.2;
+    damageSound.volume = (sfxLevel / 10) * 0.3;
+    gameOverSound.volume = (sfxLevel / 10) * 0.4;
+
+    if (musicLevel === 0) {
+        gameMusic.pause();
+    } else if (gameState === 'PLAYING' || gameState === 'PAUSED') {
+        if (gameMusic.paused) gameMusic.play().catch(e => console.log(e));
+    }
+}
+
+// Inicializace základních hlasitostí
+updateVolumes();
+
+function playSound(audioObj) {
+    if (sfxLevel > 0) {
+        audioObj.currentTime = 0;
+        audioObj.play().catch(e => console.log("Audio play error:", e));
+    }
+}
+
+function playMusic() {
+    if (musicLevel > 0) {
+        gameMusic.play().catch(e => console.log("Music play error:", e));
+    }
+}
 
 function stopMusic() {
     gameMusic.pause();
@@ -83,13 +110,11 @@ window.addEventListener('keydown', (e) => {
             player.dy = -player.jumpForce;
             player.grounded = false;
             player.jumpCount = 1;
-            jumpSound.currentTime = 0;
-            jumpSound.play();
+            playSound(jumpSound);
         } else if (player.jumpCount < 2) {
             player.dy = -player.jumpForce * 0.8;
             player.jumpCount = 2;
-            jumpSound.currentTime = 0;
-            jumpSound.play();
+            playSound(jumpSound);
         }
     }
 });
@@ -124,15 +149,13 @@ let scrapsCollected = 0;
 
 function takeDamage() {
     if (player.isGolden) {
-        damageSound.currentTime = 0;
-        damageSound.play();
+        playSound(damageSound);
         player.lives = 2;
         player.isGolden = false;
         player.isInvincible = true;
         player.invincibleTimer = 120;
     } else if (player.lives >= 2) {
-        damageSound.currentTime = 0;
-        damageSound.play();
+        playSound(damageSound);
         player.lives = 1;
         player.width = 80;
         player.height = 80;
@@ -142,8 +165,7 @@ function takeDamage() {
         player.isInvincible = true;
         player.invincibleTimer = 120;
     } else {
-        gameOverSound.currentTime = 0;
-        gameOverSound.play();
+        playSound(gameOverSound);
         gameState = 'GAMEOVER';
     }
 }
@@ -167,7 +189,6 @@ function generateLevel() {
 
     let gapMultiplier = Math.min(1.5, 1 + (currentLevel * 0.05));
     let heightMultiplier = Math.min(2.0, 1 + (currentLevel * 0.1));
-    // ZVÝŠENÁ ŠANCE NA NEPŘÁTELE (Základ 48 % místo 33 %, maximum 90 %)
     let enemyDensity = Math.min(0.9, 0.40 + (currentLevel * 0.08));
 
     platforms.push({ type: 'box', x: 0, y: 850, width: 800, height: 300 });
@@ -235,28 +256,27 @@ function generateLevel() {
                 }
             }
 
-            // ROZDĚLENÍ NEPŘÁTEL PŘI ÚSPĚŠNÉM GENERÁTORU
             if (width > 350 && pType === 'box') {
                 if (Math.random() < enemyDensity) {
                     let enemyType = Math.random();
-                    if (enemyType < 0.25) { // 25 % Dupáček
+                    if (enemyType < 0.25) {
                         stompers.push({
                             x: currentX + width / 2, y: currentY - 90, width: 90, height: 90,
                             startX: currentX + 20, endX: currentX + width - 110,
                             speed: 2 + Math.random() * 1.5, chargeSpeed: 7 + Math.random() * 3,
                             facingRight: false, state: 'PATROL', timer: 0
                         });
-                    } else if (enemyType < 0.50) { // 25 % Věž
+                    } else if (enemyType < 0.50) {
                         turrets.push({
                             x: currentX + width / 2 - 30, y: currentY - 60, width: 60, height: 60,
                             timer: 0, shootInterval: Math.max(30, 60 + Math.random() * 80 - (currentLevel * 5))
                         });
-                    } else if (enemyType < 0.70) { // 20 % Pístová drtička
+                    } else if (enemyType < 0.70) {
                         traps.push({
                             x: currentX + width / 2 - 30, y: currentY, width: 60, height: 0, maxHeight: 110,
                             state: 'HIDDEN', timer: Math.floor(Math.random() * 100)
                         });
-                    } else { // 30 % Létající Dron (mírně zvýšena šance na drony)
+                    } else {
                         drones.push({
                             x: currentX + width / 2,
                             y: currentY - 250 - Math.random() * 150,
@@ -513,10 +533,52 @@ function update() {
         if (menuBg.complete && menuBg.naturalHeight !== 0) ctx.drawImage(menuBg, 0, 0, canvas.width, canvas.height);
         else { ctx.fillStyle = '#2e1e12'; ctx.fillRect(0, 0, canvas.width, canvas.height); }
 
-        drawBtn("PLAY", canvas.width / 2 - 150, canvas.height / 2 + 50, 300, 80, () => {
-            gameState = 'PLAYING'; restartLevel(true); gameMusic.play();
+        drawBtn("HRÁT", canvas.width / 2 - 150, canvas.height / 2, 300, 80, () => {
+            gameState = 'PLAYING'; restartLevel(true); playMusic();
         });
-        drawBtn("CREDITS", canvas.width / 2 - 150, canvas.height / 2 + 150, 300, 80, () => { gameState = 'CREDITS'; });
+        drawBtn("NASTAVENÍ", canvas.width / 2 - 150, canvas.height / 2 + 100, 300, 80, () => {
+            gameState = 'SETTINGS';
+        });
+        drawBtn("CREDITS", canvas.width / 2 - 150, canvas.height / 2 + 200, 300, 80, () => {
+            gameState = 'CREDITS';
+        });
+    }
+    else if (gameState === 'SETTINGS') {
+        ctx.fillStyle = '#1a110a'; ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.fillStyle = "white"; ctx.textAlign = "center"; ctx.font = "bold 80px Georgia";
+        ctx.fillText("NASTAVENÍ ZVUKU", canvas.width / 2, 300);
+
+        // --- HUDBA ---
+        drawBtn("-", canvas.width / 2 - 250, 450, 80, 80, () => {
+            if (musicLevel > 0) { musicLevel--; updateVolumes(); }
+        });
+
+        ctx.fillStyle = '#bc8a5f'; ctx.fillRect(canvas.width / 2 - 150, 450, 300, 80);
+        ctx.strokeStyle = '#8a5c3a'; ctx.lineWidth = 4; ctx.strokeRect(canvas.width / 2 - 150, 450, 300, 80);
+        ctx.fillStyle = 'white'; ctx.font = 'bold 35px Georgia'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+        ctx.fillText("HUDBA: " + (musicLevel * 10) + "%", canvas.width / 2, 490);
+
+        drawBtn("+", canvas.width / 2 + 170, 450, 80, 80, () => {
+            if (musicLevel < 10) { musicLevel++; updateVolumes(); }
+        });
+
+        // --- EFEKTY ---
+        drawBtn("-", canvas.width / 2 - 250, 570, 80, 80, () => {
+            if (sfxLevel > 0) { sfxLevel--; updateVolumes(); playSound(jumpSound); }
+        });
+
+        ctx.fillStyle = '#bc8a5f'; ctx.fillRect(canvas.width / 2 - 150, 570, 300, 80);
+        ctx.strokeStyle = '#8a5c3a'; ctx.lineWidth = 4; ctx.strokeRect(canvas.width / 2 - 150, 570, 300, 80);
+        ctx.fillStyle = 'white'; ctx.font = 'bold 35px Georgia'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+        ctx.fillText("EFEKTY: " + (sfxLevel * 10) + "%", canvas.width / 2, 610);
+
+        drawBtn("+", canvas.width / 2 + 170, 570, 80, 80, () => {
+            if (sfxLevel < 10) { sfxLevel++; updateVolumes(); playSound(jumpSound); }
+        });
+
+        drawBtn("ZPĚT", canvas.width / 2 - 200, 750, 400, 80, () => {
+            gameState = 'MENU';
+        });
     }
     else if (gameState === 'CREDITS') {
         ctx.fillStyle = '#1a110a'; ctx.fillRect(0, 0, canvas.width, canvas.height);
@@ -539,7 +601,7 @@ function update() {
             ctx.fillStyle = "white"; ctx.font = "bold 50px Georgia";
             ctx.fillText("FINÁLNÍ SKÓRE: " + finalScore, canvas.width / 2, canvas.height / 2 - 30);
 
-            drawBtn("RESTART", canvas.width / 2 - 250, canvas.height / 2 + 80, 220, 80, () => { gameState = 'PLAYING'; restartLevel(true); gameMusic.play(); });
+            drawBtn("RESTART", canvas.width / 2 - 250, canvas.height / 2 + 80, 220, 80, () => { gameState = 'PLAYING'; restartLevel(true); playMusic(); });
             drawBtn("MENU", canvas.width / 2 + 30, canvas.height / 2 + 80, 220, 80, () => { gameState = 'MENU'; });
         } else {
             ctx.fillText(`LEVEL ${currentLevel} DOKONČEN!`, canvas.width / 2, canvas.height / 2 - 50);
@@ -549,7 +611,7 @@ function update() {
                 currentLevel++;
                 gameState = 'PLAYING';
                 restartLevel(false);
-                gameMusic.play();
+                playMusic();
             });
             drawBtn("MENU", canvas.width / 2 - 200, canvas.height / 2 + 180, 400, 80, () => { gameState = 'MENU'; });
         }
@@ -595,7 +657,7 @@ function update() {
                                 p.state = 'SHAKING';
                             } else if (p.type === 'vent') {
                                 player.dy = -player.jumpForce * 1.6; player.grounded = false; player.jumpCount = 1;
-                                jumpSound.currentTime = 0; jumpSound.play();
+                                playSound(jumpSound);
                             }
                         }
                     }
@@ -608,10 +670,10 @@ function update() {
                             if (p.type === 'brick') {
                                 p.destroyed = true;
                                 bonusScore += 50;
-                                jumpSound.currentTime = 0; jumpSound.play();
+                                playSound(jumpSound);
                             } else if (p.type === 'qblock' && !p.hit) {
                                 p.hit = true;
-                                jumpSound.currentTime = 0; jumpSound.play();
+                                playSound(jumpSound);
 
                                 if (Math.random() < 0.25) {
                                     stars.push({ x: p.x + 10, y: p.y - 50, width: 40, height: 40, collected: false });
@@ -638,7 +700,7 @@ function update() {
             if (player.x < 0) player.x = 0; if (player.x + player.width > mapEnd) player.x = mapEnd - player.width;
 
             if (player.y > canvas.height + 200) {
-                gameOverSound.currentTime = 0; gameOverSound.play(); gameState = 'GAMEOVER';
+                playSound(gameOverSound); gameState = 'GAMEOVER';
             }
 
             if (player.x > canvas.width / 2) cameraX = player.x - canvas.width / 2;
@@ -708,7 +770,7 @@ function update() {
                         drones.splice(i, 1);
                         player.dy = -15;
                         player.jumpCount = 1;
-                        bonusScore += 400; jumpSound.currentTime = 0; jumpSound.play();
+                        bonusScore += 400; playSound(jumpSound);
                     }
                     else if (!player.isInvincible) {
                         takeDamage();
@@ -768,7 +830,7 @@ function update() {
                     if (player.dy > 0 && prevBottom <= s.y + 30) {
                         stompers.splice(i, 1); player.dy = -18;
                         player.jumpCount = 1;
-                        bonusScore += 500; jumpSound.currentTime = 0; jumpSound.play();
+                        bonusScore += 500; playSound(jumpSound);
                     }
                     else if (!player.isInvincible) {
                         takeDamage();
