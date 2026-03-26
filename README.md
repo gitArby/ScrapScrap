@@ -1,26 +1,19 @@
-# ⚙️ ScrapScrap
-# Adam Macků Zdeněk Vápeník
+# ScrapScrap ⚙️
 
-2D steampunková plošinovka vytvářená jako maturitní a výukový projekt.  
-Hlavní důraz je kladen na plynulé skákání, mechanickou atmosféru a stylovou grafiku.
+**Autoři:** Adam Macků, Zdeněk Vápeník  
+**Předmět:** 4ITB PHR (Programování her)  
 
-## 📖 O projektu
-**ScrapScrap** je klasická 2D skákačka zasazená do obřího mechanického světa plného ozubených kol, trubek a syčící páry. Hráč se ujímá role malého hodinového robota (automata), který musí skákat po platformách, překonávat pasti a vyhýbat se nepřátelům v továrním komplexu.
+ScrapScrap je 2D logická skákačka (platformer) zasazená do prostředí staré, opuštěné steampunkové továrny. Hráč ovládá malého robota, který se musí dostat přes smrtící propasti, rotující ozubená kola a nepřátelské věže až na konec úrovně.
 
-**Hlavní pilíře hry:**
-* **Klasická plošinovka:** Precizní pohyb, skákání a vyhýbání (Mario styl).
-* **Steampunková estetika:** Vizuál postavený na mosazi, mědi, nýtech a páře.
-* **Mechanický svět:** Interaktivní prostředí (pohyblivé plošiny, parní gejzíry, rotující kola).
-* **Unikátní nepřátelé:** Mechaničtí brouci, stacionární parní věže a hlídací drony.
+Hra je kompletně vytvořena v HTML5 Canvas a čistém JavaScriptu s vlastní naprogramovanou fyzikou a podporou plynulého běhu na monitorech s vysokou obnovovací frekvencí (uzamčeno na 60 FPS s pomocí Delta Time). Projekt lze spustit v prohlížeči nebo zabalit jako desktopovou aplikaci pomocí frameworku Electron.
 
-## 🛠️ Technologie
-* **Herní engine:** Godot Engine 4.x (2D)
+## Obsah dokumentace
+1. [Základní koncepce](01_zakladni_koncepce.md)
+2. [Game Design](02_game_design.md)
+3. [Grafika](03_grafika.md)
+4. [Audio](04_audio.md)
 
-## 📂 Struktura repozitáře
-```text
-📜 README.md
-📁 docs/
-    ├── 01_zakladni_koncepce.md
-    └── 02_game_design.md
-📁 src/
-    └── (zdrojové kódy hry a assety)
+## Spuštění hry
+- Klonujte tento repozitář.
+- Otevřete soubor `index.html` ve webovém prohlížeči, případně hru spusťte přes lokální server (např. Live Server ve VS Code).
+- Hru lze ovládat šipkami (nebo WASD) a mezerníkem. Menu se ovládá myší.
