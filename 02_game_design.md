@@ -1,25 +1,28 @@
 # Kapitola 2: Game Design
 
+## Herní smyčka a Progrese
+Hra využívá systém **nekonečného procedurálního generování**. Namísto jednoho pevného levelu hráč prochází sérií úrovní, jejichž obtížnost se neustále stupňuje (mezery se zvětšují, přibývá nepřátel a propastí). Hra počítá celkové skóre na základě ušlé vzdálenosti a bonusů za zabíjení nepřátel.
+
 ## Mechaniky postavy (Hráč)
-Hráč ovládá malého robota. Základním pohybem je chůze (vlevo/vpravo) a skok. Hra využívá modifikovaný "Mario systém" zdraví:
-- **Základní stav (1 život):** Robot je malý. Při zásahu nábojem, pádu do propasti nebo kontaktu s nebezpečím hra končí (Game Over).
-- **Power-up (2 životy):** Po sebrání zlaté hvězdy se robot zvětší, zvýší se mu síla skoku a získá jeden život navíc.
-- **Zranění a nesmrtelnost:** Pokud je robot ve velkém stavu zasažen, neztrácí hru, ale zmenší se zpět na základní velikost a na 2 vteřiny získá nesmrtelnost (vizualizováno blikáním postavy), aby mohl utéct do bezpečí.
+Základním pohybem je chůze a skok. Hráč má ale k dispozici i pokročilé pohybové možnosti:
+- **Dvojskok (Double Jump):** Hráč může ve vzduchu provést ještě jeden menší skok pro korigování dopadu.
+- **Goomba Stomp:** Nepřátele lze zneškodnit tím, že jim hráč skočí přesně na hlavu. Tím získá body, odrazí se vysoko do vzduchu a obnoví se mu možnost dvojskoku.
 
-## Ovládání
-- **A / D** nebo **Šipka vlevo / vpravo:** Pohyb postavy.
-- **W / Šipka nahoru / Mezerník:** Skok.
-- **Myš:** Navigace v interaktivním menu (tlačítka Play, Credits, Restart).
+**Systém zdraví a Power-upy:**
+- **Základní stav (1 život):** Zásah znamená Game Over.
+- **Velký stav (2 životy):** Po sebrání hvězdy se robot zvětší. Zásah ho pouze zmenší zpět a udělí dočasnou nesmrtelnost (blikání).
+- **Zlatý stav (God mode):** Pokud hráč sebere hvězdu, když už je velký, získá zlatou auru a +2 životy.
+- **Sběr Šrotu (Scraps):** Po mapě jsou rozesety matice (šrot). Za každých 100 nasbíraných kusů získává hráč život navíc (inspirace mincemi ze Super Mario).
 
-## Environmentální překážky (Plošiny)
-Ve hře jsou dva typy povrchů, po kterých lze chodit:
-1. **Statické bloky (Box):** Pevné plošiny tvořící základní pevninu.
-2. **Ozubená kola (Gear):** Rotující mechanické platformy. Mají vlastní naprogramovanou **kruhovou fyziku**. Hráč se po nich pohybuje po přesném oblouku, nikoliv po čtvercovém hitboxu. Navíc tyto platformy aplikují na hráče kinetickou energii – pokud kolo rotuje, funguje jako běžící pás a snáší hráče určitým směrem.
+## Environmentální překážky a Plošiny
+- **Statické bloky:** Pevná zem.
+- **Ozubená kola:** Rotující platformy využívající kruhovou fyziku (fungují jako běžící pásy).
+- **Rozpadající se plošiny (Fragile):** Rezavé rošty, které se po dopadu začnou třást a následně spadnou do propasti.
+- **Parní katapulty (Steam Vents):** Mříže chrlící páru, které hráče po dopadu obrovskou silou vystřelí vysoko do vzduchu.
+- **Interaktivní bloky (Cihly a Q-Bloky):** Levitující bloky, do kterých lze zespodu udeřit. Cihly se zničí a dají body, Q-Bloky (Otazníky) náhodně odmění hráče hromadou šrotu nebo vzácnou hvězdou.
 
-## Nepřátelé
-**Chytré rotační věže (Turrets):**
-Statické nepřátelské jednotky rozmístěné po mapě. Věž se skládá ze základny a otočné kopule. Hlaveň věže neustále dynamicky sleduje pohyb hráče (pomocí výpočtu úhlu `Math.atan2`). Věž pravidelně střílí projektily, přičemž před výstřelem se "oko" věže vizuálně rozžhaví do ruda, což hráče varuje před blížící se palbou.
-
-## Uživatelské rozhraní (UI)
-Hra využívá herní stavy (`MENU`, `PLAYING`, `GAMEOVER`, `VICTORY`, `CREDITS`). 
-Hlavní menu a závěrečné obrazovky využívají programově kreslená mosazná tlačítka s hover efektem pro intuitivní ovládání myší. V průběhu hraní se v rohu zobrazuje indikátor "LEVEL 1".
+## Nepřátelé a Pasti
+- **Sešrotovací Dupáček (Stomper):** Mechanický Goliáš, který hlídkuje na plošině. Jakmile hráče spatří, rozeběhne se na něj.
+- **Industriální Věž (Turret):** Stacionární dělo. Jeho hlaveň (pomocí `Math.atan2`) neustále sleduje hráče a v pravidelných intervalech pálí žhavé projektily.
+- **Pístová drtička (Piston Trap):** Smrtící čelisti, které se nečekaně vysouvají ze země. Nelze je zašlápnout, hráč se jim musí vyhnout.
+- **Létající Dron (Hover Drone):** Vznáší se vysoko nad plošinami na základě goniometrické funkce Sinus. Jakmile hráče detekuje, začne ho pronásledovat a střílet na něj ze vzduchu.
