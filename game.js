@@ -195,6 +195,7 @@ function takeDamage() {
     } else {
         playSound(gameOverSound);
         gameState = 'GAMEOVER';
+        gameState = 'GAMEOVER_INPUT';
     }
 }
 
