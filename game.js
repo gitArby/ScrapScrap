@@ -96,6 +96,21 @@ for (let i = 1; i <= 5; i++) {
     img.onload = assetLoaded;
     runFrames.push(img);
 }
+// ---------------------------------------------------------
+//  LEADERBOARD LOGIKA
+// ---------------------------------------------------------
+let playerName = "ROBOT_" + Math.floor(Math.random() * 999);
+let highScores = JSON.parse(localStorage.getItem('scrapScrapScores')) || [];
+
+function saveScore(score) {
+    highScores.push({ name: playerName, score: score });
+    highScores.sort((a, b) => b.score - a.score);
+    highScores = highScores.slice(0, 5); // Necháme jen TOP 5
+    localStorage.setItem('scrapScrapScores', JSON.stringify(highScores));
+
+
+
+
 
 // ---------------------------------------------------------
 // 2. HRÁČ, MYŠ A SKÓRE
