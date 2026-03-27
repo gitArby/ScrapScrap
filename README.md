@@ -10,7 +10,7 @@ Hru si můžete zahrát okamžitě několika způsoby:
 
 * **🌐 Webová verze (Live):** [**scrapscrap.app**](https://scrapscrap.app/)
 * **💻 Desktopová verze (.EXE):** [**Stáhnout ze serveru MediaFire**](https://www.mediafire.com/file/3n5d3h7n5l5q8im/ScrapScrap.zip/file)
-* **🛠 Lokální spuštění:** Klonujte tento repozitář a otevřete soubor `index.html` (doporučeno přes **Live Server** ve VS Code kvůli správnému načítání zvukových souborů).
+* **🛠 Lokální spuštění:** Klonujte tento repozitář a otevřete soubor `index.html` (doporučeno přes **Live Server** ve VS Code kvůli správnému načítání zvukových souborů). - méně doporučené
 
 ---
 
