@@ -22,7 +22,7 @@ Hru si můžete zahrát okamžitě několika způsoby:
 * **Procedurální generování:** Každý pokus je unikátní; hra automaticky generuje náročnější terén s každým dalším levelem.
 * **Industriální překážky:** Rotující ozubená kola, parní katapulty, pístové pasti a rozpadající se plošiny.
 * **Inteligentní nepřátelé:** Pozemní Stompeři s detekcí hráče, stacionární věže a létající drony, které vás pronásledují vzduchem.
-* **Leaderboard:** Systém ukládání nejlepších skóre přímo v prohlížeči.
+* **Leaderboard:** Tabulka nejlepších hráču za pomocí Firebase databáze leaderboard funguje na všech hratelných verzích.
 * **Technické zpracování:** Kompletně v HTML5 Canvas a čistém JavaScriptu. Logika je uzamčena na **60 FPS** pro plynulý zážitek i na 144Hz+ monitorech.
 
 ---
