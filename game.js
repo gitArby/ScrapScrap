@@ -100,14 +100,37 @@ for (let i = 1; i <= 5; i++) {
 // ---------------------------------------------------------
 // 2. HRÁČ, MYŠ A SKÓRE
 // ---------------------------------------------------------
+const firebaseConfig = {
+  apiKey: "AIzaSyBbKXxVKvd2BImAVtUzKKVNpwL0If384fg",
+  authDomain: "scrapscrap-8df08.firebaseapp.com",
+  projectId: "scrapscrap-8df08",
+  storageBucket: "scrapscrap-8df08.firebasestorage.app",
+  messagingSenderId: "129438387489",
+  appId: "1:129438387489:web:ca13a76ff5b487d96e5c68"
+};
+
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+
 let playerName = "ROBOT_" + Math.floor(Math.random() * 999);
-let highScores = JSON.parse(localStorage.getItem('scrapScrapScores')) || [];
+let highScores = [];
+
+// Načtení Top 5 skóre v reálném čase z Firebase
+db.collection('scores').orderBy('score', 'desc').limit(5).onSnapshot(snapshot => {
+    highScores = [];
+    snapshot.forEach(doc => {
+        highScores.push(doc.data());
+    });
+}, error => {
+    console.error("Firebase chyba načítání leaderboardu:", !!error.message ? error.message : error);
+});
 
 function saveScore(score) {
-    highScores.push({ name: playerName, score: score });
-    highScores.sort((a, b) => b.score - a.score);
-    highScores = highScores.slice(0, 5);
-    localStorage.setItem('scrapScrapScores', JSON.stringify(highScores));
+    db.collection('scores').add({
+        name: playerName,
+        score: score,
+        timestamp: firebase.firestore.FieldValue.serverTimestamp()
+    }).catch(err => console.error("Firebase chyba ukládání skóre:", err));
 }
 
 const keys = { ArrowLeft: false, ArrowRight: false, ArrowUp: false, a: false, d: false, w: false, ' ': false, Escape: false, Enter: false, Backspace: false };
