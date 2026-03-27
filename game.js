@@ -135,7 +135,20 @@ window.addEventListener('keydown', (e) => {
 });
 
 window.addEventListener('keyup', (e) => { if (keys.hasOwnProperty(e.key)) keys[e.key] = false; });
+// Logika psaní jména
+    if (gameState === 'GAMEOVER_INPUT') {
+        if (e.key === 'Enter' && playerName.length > 0) {
+            let finalScore = totalScore + Math.floor(maxDistance / 10) + bonusScore;
+            saveScore(finalScore);
+            gameState = 'MENU';
+        } else if (e.key === 'Backspace') {
+            playerName = playerName.slice(0, -1);
+        } else if (e.key.length === 1 && playerName.length < 12) {
+            playerName += e.key.toUpperCase();
+        }
+    }
 
+    
 const mouse = { x: 0, y: 0, clicked: false };
 window.addEventListener('mousemove', (e) => {
     const rect = canvas.getBoundingClientRect();
