@@ -126,9 +126,23 @@ db.collection('scores').orderBy('score', 'desc').limit(5).onSnapshot(snapshot =>
 });
 
 function saveScore(score) {
+    let timeSpent = Math.max(1, Math.floor((Date.now() - gameStartTime) / 1000));
+    
+    // Základní Anti-Cheat ochrana rychlosti zisku skóre (500 základ + 100 za sekundu max)
+    if (score > (timeSpent * 100) + 500) {
+        console.error("ANTI-CHEAT: Detekováno podezřelé skóre (příliš vysoké za krátký čas).");
+        return;
+    }
+
+    // Generování jednoduchého obfuskovaného tokenu proti zápisu přes obyčejnou DB query
+    let secret = "_SCRaP_SEcrET_2026!_";
+    let token = btoa(playerName + "_" + score + "_" + timeSpent + secret);
+
     db.collection('scores').add({
         name: playerName,
         score: score,
+        timeSpent: timeSpent,
+        token: token,
         timestamp: firebase.firestore.FieldValue.serverTimestamp()
     }).catch(err => console.error("Firebase chyba ukládání skóre:", err));
 }
@@ -191,6 +205,7 @@ let totalScore = 0;
 let maxDistance = 0;
 let bonusScore = 0;
 let scrapsCollected = 0;
+let gameStartTime = Date.now();
 
 function takeDamage() {
     if (player.isGolden) {
@@ -356,6 +371,7 @@ function restartLevel(fullReset = true) {
         player.isBig = false;
         player.isGolden = false;
         player.lives = 1;
+        gameStartTime = Date.now();
     }
 
     generateLevel();
