@@ -34,7 +34,7 @@
     // 1. OBRÁZKY A ASSET LOADING
     // ---------------------------------------------------------
     let assetsLoaded = 0;
-    const totalAssets = 7;
+    const totalAssets = 9;
 
     function assetLoaded() {
         assetsLoaded++;
@@ -104,6 +104,14 @@
         img.onload = assetLoaded;
         runFrames.push(img);
     }
+
+    const jumpImg = new Image();
+    jumpImg.src = 'jump.png';
+    jumpImg.onload = assetLoaded;
+
+    const fallImg = new Image();
+    fallImg.src = 'fall.png';
+    fallImg.onload = assetLoaded;
 
     // ---------------------------------------------------------
     // 2. HRÁČ, MYŠ A SKÓRE
@@ -1579,7 +1587,15 @@
             }
             ctx.restore();
 
-            let currentImg = runFrames[player.frameIndex];
+            // Výběr správného sprite: skok nahoru / pád dolů / běh
+            let currentImg;
+            if (!player.grounded && player.dy < -2) {
+                currentImg = jumpImg;
+            } else if (!player.grounded && player.dy > 2) {
+                currentImg = fallImg;
+            } else {
+                currentImg = runFrames[player.frameIndex];
+            }
             ctx.save();
             let blinkOn = !player.isInvincible || (Math.floor(Date.now() / 150) % 2 === 0);
 
