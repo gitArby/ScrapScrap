@@ -199,9 +199,9 @@
         }
     });
 
-    window.addEventListener('keyup', (e) => { 
+    window.addEventListener('keyup', (e) => {
         let normalizedKey = e.key.length === 1 ? e.key.toLowerCase() : e.key;
-        if (keys.hasOwnProperty(normalizedKey)) keys[normalizedKey] = false; 
+        if (keys.hasOwnProperty(normalizedKey)) keys[normalizedKey] = false;
     });
 
     const mouse = { x: 0, y: 0, clicked: false };
@@ -236,7 +236,7 @@
     let screenShake = 0;
 
     function spawnParticles(x, y, count, color, type = 'square') {
-        for(let i=0; i<count; i++) {
+        for (let i = 0; i < count; i++) {
             particles.push({
                 x: x, y: y,
                 vx: (Math.random() - 0.5) * 15,
@@ -252,7 +252,7 @@
 
     function takeDamage() {
         screenShake = 20;
-        spawnParticles(player.x + player.width/2, player.y + player.height/2, 30, 'red', 'square');
+        spawnParticles(player.x + player.width / 2, player.y + player.height / 2, 30, 'red', 'square');
         if (player.isGolden) {
             playSound(damageSound);
             player.lives = 2;
@@ -584,7 +584,7 @@
         const imgRatio = img.width / img.height;
         const canvasRatio = canvas.width / canvas.height;
         let drawWidth, drawHeight;
-        
+
         if (canvasRatio > imgRatio) {
             drawWidth = canvas.width;
             drawHeight = canvas.width / imgRatio;
@@ -592,7 +592,7 @@
             drawHeight = canvas.height;
             drawWidth = canvas.height * imgRatio;
         }
-        
+
         const x = (canvas.width - drawWidth) / 2;
         const y = (canvas.height - drawHeight) / 2;
         ctx.drawImage(img, x, y, drawWidth, drawHeight);
@@ -630,7 +630,7 @@
     function drawBoxPlatform(p) {
         let screenX = p.x - cameraX; let screenY = p.y - cameraY;
         ctx.fillStyle = '#bc8a5f'; ctx.fillRect(screenX, screenY, p.width, p.height);
-        ctx.fillStyle = 'rgba(0,0,0,0.3)'; ctx.fillRect(screenX, screenY + p.height/2, p.width, p.height/2);
+        ctx.fillStyle = 'rgba(0,0,0,0.3)'; ctx.fillRect(screenX, screenY + p.height / 2, p.width, p.height / 2);
         ctx.fillStyle = '#ebc49f'; ctx.fillRect(screenX, screenY, p.width, 3);
         ctx.fillStyle = '#8a5c3a'; ctx.fillRect(screenX, screenY + p.height - 10, p.width, 10);
         if (p.width > 20 && p.height > 20) {
@@ -657,7 +657,7 @@
     function drawVentPlatform(p) {
         let screenX = p.x - cameraX; let screenY = p.y - cameraY;
         ctx.fillStyle = '#4a555c'; ctx.fillRect(screenX, screenY, p.width, p.height);
-        ctx.fillStyle = 'rgba(0,0,0,0.4)'; ctx.fillRect(screenX, screenY + p.height/2, p.width, p.height/2);
+        ctx.fillStyle = 'rgba(0,0,0,0.4)'; ctx.fillRect(screenX, screenY + p.height / 2, p.width, p.height / 2);
         ctx.fillStyle = '#788891'; ctx.fillRect(screenX, screenY, p.width, 3);
         ctx.fillStyle = '#262d30'; ctx.fillRect(screenX, screenY + p.height - 10, p.width, 10);
 
@@ -677,7 +677,7 @@
     function drawConveyorPlatform(p) {
         let screenX = p.x - cameraX; let screenY = p.y - cameraY;
         ctx.fillStyle = '#444'; ctx.fillRect(screenX, screenY, p.width, p.height);
-        ctx.fillStyle = 'rgba(0,0,0,0.5)'; ctx.fillRect(screenX, screenY + p.height/2, p.width, p.height/2);
+        ctx.fillStyle = 'rgba(0,0,0,0.5)'; ctx.fillRect(screenX, screenY + p.height / 2, p.width, p.height / 2);
         ctx.fillStyle = '#666'; ctx.fillRect(screenX, screenY, p.width, 4);
         ctx.fillStyle = p.speed > 0 ? '#ffcc00' : '#ff3333';
         let offset = (Date.now() / 20 * Math.abs(p.speed)) % 40;
@@ -693,11 +693,11 @@
         let springTop = p.state === 'BOUNCING' ? p.height - 20 : p.height - 10;
         ctx.strokeStyle = '#c00'; ctx.lineWidth = 4;
         ctx.beginPath();
-        for(let i=0; i<3; i++) {
-           let y1 = screenY + p.height - 10 - (i * springTop/3);
-           let y2 = screenY + p.height - 10 - ((i+1) * springTop/3);
-           ctx.moveTo(screenX + 10, y1);
-           ctx.lineTo(screenX + p.width - 10, y2);
+        for (let i = 0; i < 3; i++) {
+            let y1 = screenY + p.height - 10 - (i * springTop / 3);
+            let y2 = screenY + p.height - 10 - ((i + 1) * springTop / 3);
+            ctx.moveTo(screenX + 10, y1);
+            ctx.lineTo(screenX + p.width - 10, y2);
         }
         ctx.stroke();
         ctx.fillStyle = '#888'; ctx.fillRect(screenX, screenY + p.height - springTop - 15, p.width, 10);
@@ -754,19 +754,19 @@
         let screenX = s.x - cameraX; let screenY = s.y - cameraY; let centerY = screenY + s.height / 2;
         ctx.save();
         ctx.fillStyle = '#a67b5b'; ctx.fillRect(screenX, screenY, s.width, s.height);
-        
+
         let sRatio = s.width / 90;
-        ctx.fillStyle = '#3b2515'; let armX = s.facingRight ? screenX + s.width - 5*sRatio : screenX - 25*sRatio; ctx.fillRect(armX, centerY - 10*sRatio, 30*sRatio, 20*sRatio);
-        
+        ctx.fillStyle = '#3b2515'; let armX = s.facingRight ? screenX + s.width - 5 * sRatio : screenX - 25 * sRatio; ctx.fillRect(armX, centerY - 10 * sRatio, 30 * sRatio, 20 * sRatio);
+
         ctx.fillStyle = (s.state === 'CHARGE' || s.state === 'CHARGING') ? 'red' : '#ffcc00';
-        let eyeX = s.facingRight ? screenX + s.width - 20*sRatio : screenX + 10*sRatio; ctx.beginPath(); ctx.arc(eyeX, screenY + 20*sRatio, 8*sRatio, 0, Math.PI * 2); ctx.fill();
-        ctx.beginPath(); ctx.arc(eyeX + (s.facingRight ? -12*sRatio : 12*sRatio), screenY + 20*sRatio, 6*sRatio, 0, Math.PI * 2); ctx.fill();
-        
-        ctx.fillStyle = '#8a5c3a'; ctx.fillRect(screenX + s.width / 4, screenY - 10*sRatio, s.width / 2, 10*sRatio);
-        drawGear(s.x + s.width / 2, s.y - 5*sRatio, 12*sRatio, Date.now() / 200, '#bc8a5f', 'rgba(0,0,0,0.8)');
-        
-        ctx.fillStyle = '#5c3a21'; let legOffset = s.facingRight ? 10*sRatio : -10*sRatio;
-        ctx.fillRect(screenX + s.width / 4 + legOffset, screenY + s.height - 10*sRatio, 20*sRatio, 20*sRatio); ctx.fillRect(screenX + s.width * 0.6 + legOffset, screenY + s.height - 10*sRatio, 20*sRatio, 20*sRatio);
+        let eyeX = s.facingRight ? screenX + s.width - 20 * sRatio : screenX + 10 * sRatio; ctx.beginPath(); ctx.arc(eyeX, screenY + 20 * sRatio, 8 * sRatio, 0, Math.PI * 2); ctx.fill();
+        ctx.beginPath(); ctx.arc(eyeX + (s.facingRight ? -12 * sRatio : 12 * sRatio), screenY + 20 * sRatio, 6 * sRatio, 0, Math.PI * 2); ctx.fill();
+
+        ctx.fillStyle = '#8a5c3a'; ctx.fillRect(screenX + s.width / 4, screenY - 10 * sRatio, s.width / 2, 10 * sRatio);
+        drawGear(s.x + s.width / 2, s.y - 5 * sRatio, 12 * sRatio, Date.now() / 200, '#bc8a5f', 'rgba(0,0,0,0.8)');
+
+        ctx.fillStyle = '#5c3a21'; let legOffset = s.facingRight ? 10 * sRatio : -10 * sRatio;
+        ctx.fillRect(screenX + s.width / 4 + legOffset, screenY + s.height - 10 * sRatio, 20 * sRatio, 20 * sRatio); ctx.fillRect(screenX + s.width * 0.6 + legOffset, screenY + s.height - 10 * sRatio, 20 * sRatio, 20 * sRatio);
         ctx.restore();
     }
 
@@ -1005,7 +1005,7 @@
                     }
 
                     if (p.type === 'brick' && p.destroyed) continue;
-                    
+
                     if (p.type === 'spring' && p.state === 'BOUNCING') {
                         p.timer--;
                         if (p.timer <= 0) p.state = 'IDLE';
@@ -1016,14 +1016,14 @@
                         if ((p.type === 'box' || (p.type === 'fragile' && p.state !== 'FALLING') || p.type === 'vent' || p.type === 'brick' || p.type === 'qblock' || p.type === 'conveyor' || p.type === 'spring') && player.dy >= 0) {
                             let prevBottom = player.lastY + player.height; let currBottom = player.y + player.height;
                             if (prevBottom <= p.y && currBottom >= p.y) {
-                                if (!player.grounded && player.dy > 5) spawnParticles(player.x + player.width/2, p.y, 10, '#888', 'dust');
+                                if (!player.grounded && player.dy > 5) spawnParticles(player.x + player.width / 2, p.y, 10, '#888', 'dust');
                                 if (p.type === 'spring') {
                                     player.dy = -player.jumpForce * 1.5;
                                     player.grounded = false; player.jumpCount = 1;
                                     p.state = 'BOUNCING';
                                     p.timer = 15;
                                     screenShake = 10;
-                                    spawnParticles(player.x + player.width/2, p.y + p.height, 20, '#c00', 'dust');
+                                    spawnParticles(player.x + player.width / 2, p.y + p.height, 20, '#c00', 'dust');
                                     playSound(jumpSound);
                                 } else {
                                     player.y = p.y - player.height; player.dy = 0; player.grounded = true; player.jumpCount = 0;
@@ -1049,7 +1049,7 @@
                                     p.destroyed = true;
                                     bonusScore += 50;
                                     playSound(jumpSound);
-                                    spawnParticles(p.x + p.width/2, p.y + p.height/2, 15, '#b34722', 'square');
+                                    spawnParticles(p.x + p.width / 2, p.y + p.height / 2, 15, '#b34722', 'square');
                                 } else if (p.type === 'qblock' && !p.hit) {
                                     p.hit = true;
                                     playSound(jumpSound);
@@ -1150,7 +1150,7 @@
                         let prevBottom = player.lastY + player.height;
 
                         if (player.dy > 0 && prevBottom <= d.y + 20) {
-                            spawnParticles(d.x + d.width/2, d.y + d.height/2, 30, '#7a7a7a', 'circle');
+                            spawnParticles(d.x + d.width / 2, d.y + d.height / 2, 30, '#7a7a7a', 'circle');
                             screenShake = 10;
                             drones.splice(i, 1);
                             player.dy = -15;
@@ -1178,12 +1178,12 @@
                     s.angle += s.facingRight ? 0.2 : -0.2;
                     if (s.x > s.endX) { s.x = s.endX; s.facingRight = false; }
                     if (s.x < s.startX) { s.x = s.startX; s.facingRight = true; }
-                    if (Math.random() < 0.3) spawnParticles(s.x + s.width/2, s.y + s.height, 2, '#ffcc00', 'circle');
+                    if (Math.random() < 0.3) spawnParticles(s.x + s.width / 2, s.y + s.height, 2, '#ffcc00', 'circle');
 
                     if (player.x < s.x + s.width && player.x + player.width > s.x && player.y < s.y + s.height && player.y + player.height > s.y) {
                         let prevBottom = player.lastY + player.height;
                         if (player.dy > 0 && prevBottom <= s.y + 30) {
-                            spawnParticles(s.x + s.width/2, s.y + s.height/2, 30, '#aaa', 'circle');
+                            spawnParticles(s.x + s.width / 2, s.y + s.height / 2, 30, '#aaa', 'circle');
                             screenShake = 10;
                             sawblades.splice(i, 1); player.dy = -15; player.jumpCount = 1;
                             bonusScore += 300; playSound(jumpSound);
@@ -1206,7 +1206,7 @@
                         if (player.x + player.width > beamLeft && player.x < beamRight && player.y + player.height > l.y + l.height) {
                             if (!player.isInvincible) {
                                 takeDamage();
-                                if (gameState !== 'GAMEOVER_INPUT') { player.dy = -10; player.x += (player.x < l.x + l.width/2) ? -50 : 50; }
+                                if (gameState !== 'GAMEOVER_INPUT') { player.dy = -10; player.x += (player.x < l.x + l.width / 2) ? -50 : 50; }
                             }
                         }
                     }
@@ -1247,14 +1247,14 @@
                         s.x += s.facingRight ? s.chargeSpeed : -s.chargeSpeed;
                         if (s.x > s.endX) { s.x = s.endX; s.state = 'PATROL'; s.facingRight = false; }
                         if (s.x < s.startX) { s.x = s.startX; s.state = 'PATROL'; s.facingRight = true; }
-                        if (Math.random() < 0.4) spawnParticles(s.x + s.width/2, s.y + s.height, 2, '#a67b5b', 'dust');
+                        if (Math.random() < 0.4) spawnParticles(s.x + s.width / 2, s.y + s.height, 2, '#a67b5b', 'dust');
                     }
 
                     if (player.x < s.x + s.width && player.x + player.width > s.x && player.y < s.y + s.height && player.y + player.height > s.y) {
                         let prevBottom = player.lastY + player.height;
 
                         if (player.dy > 0 && prevBottom <= s.y + 30) {
-                            spawnParticles(s.x + s.width/2, s.y + s.height/2, 40, '#a67b5b', 'square');
+                            spawnParticles(s.x + s.width / 2, s.y + s.height / 2, 40, '#a67b5b', 'square');
                             screenShake = 15;
                             stompers.splice(i, 1); player.dy = -18;
                             player.jumpCount = 1;
@@ -1313,11 +1313,11 @@
                         boss.x += dir * boss.speed * chargeMultiplier;
                         if (Math.random() < 0.5) {
                             let dustColor = boss.type === 'INFERNO' ? '#ff6600' : (boss.type === 'CRUSHER' ? '#a33327' : '#3366cc');
-                            spawnParticles(boss.x + boss.width/2, boss.y + boss.height, 2, dustColor, 'dust');
+                            spawnParticles(boss.x + boss.width / 2, boss.y + boss.height, 2, dustColor, 'dust');
                         }
                         // Inferno zanechává ohnivou stopu
                         if (boss.type === 'INFERNO' && Math.random() < 0.6) {
-                            spawnParticles(boss.x + boss.width/2, boss.y + boss.height - 10, 3, '#ff4400', 'spark');
+                            spawnParticles(boss.x + boss.width / 2, boss.y + boss.height - 10, 3, '#ff4400', 'spark');
                         }
                         boss.timer++;
                         if (boss.timer % 30 === 0) boss.facingRight = player.x > boss.x;
@@ -1339,8 +1339,8 @@
                                 let shockRadius = boss.type === 'CRUSHER' ? 400 : 300;
                                 screenShake = boss.type === 'CRUSHER' ? 30 : 25;
                                 let dustColor = boss.type === 'INFERNO' ? '#ff6600' : (boss.type === 'CRUSHER' ? '#a33327' : '#3366cc');
-                                spawnParticles(boss.x + boss.width/2, arenaY, 40, dustColor, 'dust');
-                                if (Math.abs((player.x + player.width/2) - (boss.x + boss.width/2)) < shockRadius && player.y + player.height >= arenaY - 20) {
+                                spawnParticles(boss.x + boss.width / 2, arenaY, 40, dustColor, 'dust');
+                                if (Math.abs((player.x + player.width / 2) - (boss.x + boss.width / 2)) < shockRadius && player.y + player.height >= arenaY - 20) {
                                     if (!player.isInvincible) { takeDamage(); if (gameState !== 'GAMEOVER_INPUT') { player.dy = -15; } }
                                 }
                                 boss.state = 'STUNNED';
@@ -1386,12 +1386,12 @@
                             player.dy = -player.jumpForce;
                             player.jumpCount = 1;
                             screenShake = 20;
-                            spawnParticles(boss.x + boss.width/2, boss.y, 30, '#ff4444', 'square');
+                            spawnParticles(boss.x + boss.width / 2, boss.y, 30, '#ff4444', 'square');
                             playSound(jumpSound);
                             if (boss.hp <= 0) {
                                 // Boss poražen!
-                                spawnParticles(boss.x + boss.width/2, boss.y + boss.height/2, 80, '#ffcc00', 'square');
-                                spawnParticles(boss.x + boss.width/2, boss.y + boss.height/2, 40, '#a33327', 'circle');
+                                spawnParticles(boss.x + boss.width / 2, boss.y + boss.height / 2, 80, '#ffcc00', 'square');
+                                spawnParticles(boss.x + boss.width / 2, boss.y + boss.height / 2, 40, '#a33327', 'circle');
                                 screenShake = 40;
                                 bonusScore += 10000;
                                 boss.state = 'DEAD';
@@ -1406,7 +1406,7 @@
                             takeDamage();
                             if (gameState !== 'GAMEOVER_INPUT') {
                                 player.dy = -12;
-                                player.x += (player.x < boss.x + boss.width/2) ? -80 : 80;
+                                player.x += (player.x < boss.x + boss.width / 2) ? -80 : 80;
                             }
                         }
                     }
@@ -1522,7 +1522,7 @@
                         for (let i = 0; i < 3; i++) {
                             let fx = bx + Math.random() * boss.width;
                             let fy = by + boss.height - 20 - Math.random() * 30;
-                            ctx.fillStyle = `rgba(255, ${100 + Math.floor(Math.random()*100)}, 0, 0.6)`;
+                            ctx.fillStyle = `rgba(255, ${100 + Math.floor(Math.random() * 100)}, 0, 0.6)`;
                             ctx.beginPath(); ctx.arc(fx, fy, 5 + Math.random() * 8, 0, Math.PI * 2); ctx.fill();
                         }
                     }
@@ -1551,7 +1551,7 @@
 
             ctx.save();
             ctx.globalCompositeOperation = 'lighter';
-            for (let b of bullets) { 
+            for (let b of bullets) {
                 ctx.fillStyle = 'rgba(255, 150, 0, 0.4)';
                 ctx.beginPath(); ctx.arc(b.x - cameraX, b.y - cameraY, 16, 0, Math.PI * 2); ctx.fill();
                 ctx.fillStyle = '#ffcc00';
@@ -1570,7 +1570,7 @@
                 else { ctx.drawImage(currentImg, player.x - cameraX, player.y - cameraY, player.width, player.height); }
             }
             ctx.restore();
-            
+
             ctx.save();
             ctx.globalCompositeOperation = 'lighter';
             for (let pt of particles) {
@@ -1581,7 +1581,7 @@
                 if (pt.type === 'circle' || pt.type === 'dust' || pt.type === 'spark') {
                     ctx.beginPath(); ctx.arc(sx, sy, pt.size, 0, Math.PI * 2); ctx.fill();
                 } else {
-                    ctx.fillRect(sx - pt.size/2, sy - pt.size/2, pt.size, pt.size);
+                    ctx.fillRect(sx - pt.size / 2, sy - pt.size / 2, pt.size, pt.size);
                 }
             }
             ctx.restore();
