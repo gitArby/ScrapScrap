@@ -119,12 +119,12 @@
 
     firebase.initializeApp(firebaseConfig);
 
-    // Aktivace Firebase App Check přes reCAPTCHA v3
-    const appCheck = firebase.appCheck();
-    appCheck.activate(
-        new firebase.appCheck.ReCaptchaV3Provider('6LcR25ssAAAAAM0pmYyh9Pmec8S5atPgrCa19m9i'),
-        true // Umožňuje automatický refresh tokenu
-    );
+    // App Check vypnut - způsoboval blokování zápisů na GitHub Pages
+    // const appCheck = firebase.appCheck();
+    // appCheck.activate(
+    //     new firebase.appCheck.ReCaptchaV3Provider('6LcR25ssAAAAAM0pmYyh9Pmec8S5atPgrCa19m9i'),
+    //     true
+    // );
 
     const db = firebase.firestore();
     const serverTimestamp = firebase.firestore.FieldValue.serverTimestamp;
