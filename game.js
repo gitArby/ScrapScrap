@@ -992,6 +992,7 @@
                     player.animTimer++; if (player.animTimer > player.animSpeed) { player.frameIndex++; if (player.frameIndex >= runFrames.length) player.frameIndex = 0; player.animTimer = 0; }
                 } else { player.frameIndex = 0; }
 
+                player.lastX = player.x;
                 player.lastY = player.y; player.dy += gravity; player.y += player.dy; player.grounded = false;
 
                 for (let p of platforms) {
@@ -1012,67 +1013,85 @@
                         if (p.timer <= 0) p.state = 'IDLE';
                     }
 
-                    if (player.x + player.width > p.x && player.x < p.x + p.width) {
+                    // Detekce překrytí (AABB)
+                    let overlapX = player.x + player.width > p.x && player.x < p.x + p.width;
+                    let overlapY = player.y + player.height > p.y && player.y < p.y + p.height;
 
-                        if ((p.type === 'box' || (p.type === 'fragile' && p.state !== 'FALLING') || p.type === 'vent' || p.type === 'brick' || p.type === 'qblock' || p.type === 'conveyor' || p.type === 'spring') && player.dy >= 0) {
-                            let prevBottom = player.lastY + player.height; let currBottom = player.y + player.height;
-                            if (prevBottom <= p.y && currBottom >= p.y) {
-                                if (!player.grounded && player.dy > 5) spawnParticles(player.x + player.width / 2, p.y, 10, '#888', 'dust');
-                                if (p.type === 'spring') {
-                                    player.dy = -player.jumpForce * 1.5;
-                                    player.grounded = false; player.jumpCount = 1;
-                                    p.state = 'BOUNCING';
-                                    p.timer = 15;
-                                    screenShake = 10;
-                                    spawnParticles(player.x + player.width / 2, p.y + p.height, 20, '#c00', 'dust');
+                    if (!overlapX) continue;
+
+                    let isSolid = (p.type === 'box' || (p.type === 'fragile' && p.state !== 'FALLING') || p.type === 'vent' || p.type === 'brick' || p.type === 'qblock' || p.type === 'conveyor' || p.type === 'spring');
+
+                    // PŘISTÁNÍ SHORA (padání dolů na platformu)
+                    if (isSolid && player.dy >= 0) {
+                        let prevBottom = player.lastY + player.height;
+                        let currBottom = player.y + player.height;
+                        // Rozšířená tolerance: pokud hráč byl nad platformou a teď je v ní nebo pod ní
+                        if (prevBottom <= p.y + 10 && currBottom >= p.y) {
+                            if (!player.grounded && player.dy > 5) spawnParticles(player.x + player.width / 2, p.y, 10, '#888', 'dust');
+                            if (p.type === 'spring') {
+                                player.dy = -player.jumpForce * 1.5;
+                                player.grounded = false; player.jumpCount = 1;
+                                p.state = 'BOUNCING';
+                                p.timer = 15;
+                                screenShake = 10;
+                                spawnParticles(player.x + player.width / 2, p.y + p.height, 20, '#c00', 'dust');
+                                playSound(jumpSound);
+                            } else {
+                                player.y = p.y - player.height; player.dy = 0; player.grounded = true; player.jumpCount = 0;
+
+                                if (p.type === 'conveyor') {
+                                    player.x += p.speed;
+                                } else if (p.type === 'fragile' && p.state === 'IDLE') {
+                                    p.state = 'SHAKING';
+                                } else if (p.type === 'vent') {
+                                    player.dy = -player.jumpForce * 1.6; player.grounded = false; player.jumpCount = 1;
                                     playSound(jumpSound);
+                                }
+                            }
+                        }
+                    }
+                    // NARAZ ZESPODU (brick/qblock)
+                    else if ((p.type === 'brick' || p.type === 'qblock') && player.dy < 0) {
+                        if (player.y <= p.y + p.height && player.lastY >= p.y + p.height / 2) {
+                            player.y = p.y + p.height;
+                            player.dy = 0;
+
+                            if (p.type === 'brick') {
+                                p.destroyed = true;
+                                bonusScore += 50;
+                                playSound(jumpSound);
+                                spawnParticles(p.x + p.width / 2, p.y + p.height / 2, 15, '#b34722', 'square');
+                            } else if (p.type === 'qblock' && !p.hit) {
+                                p.hit = true;
+                                playSound(jumpSound);
+
+                                if (Math.random() < 0.25) {
+                                    stars.push({ x: p.x + 10, y: p.y - 50, width: 40, height: 40, collected: false });
                                 } else {
-                                    player.y = p.y - player.height; player.dy = 0; player.grounded = true; player.jumpCount = 0;
-
-                                    if (p.type === 'conveyor') {
-                                        player.x += p.speed;
-                                    } else if (p.type === 'fragile' && p.state === 'IDLE') {
-                                        p.state = 'SHAKING';
-                                    } else if (p.type === 'vent') {
-                                        player.dy = -player.jumpForce * 1.6; player.grounded = false; player.jumpCount = 1;
-                                        playSound(jumpSound);
-                                    }
-                                }
-                            }
-                        }
-                        else if ((p.type === 'brick' || p.type === 'qblock') && player.dy < 0) {
-                            // Upravena, tolerantnejsi kolize zespodu (pokryje i skoky z boku)
-                            if (player.y <= p.y + p.height && player.lastY >= p.y + p.height / 2) {
-                                player.y = p.y + p.height;
-                                player.dy = 0;
-
-                                if (p.type === 'brick') {
-                                    p.destroyed = true;
                                     bonusScore += 50;
-                                    playSound(jumpSound);
-                                    spawnParticles(p.x + p.width / 2, p.y + p.height / 2, 15, '#b34722', 'square');
-                                } else if (p.type === 'qblock' && !p.hit) {
-                                    p.hit = true;
-                                    playSound(jumpSound);
-
-                                    if (Math.random() < 0.25) {
-                                        stars.push({ x: p.x + 10, y: p.y - 50, width: 40, height: 40, collected: false });
-                                    } else {
-                                        bonusScore += 50;
-                                        scrapsCollected += 10;
-                                        if (scrapsCollected >= 100) { scrapsCollected -= 100; player.lives++; }
-                                    }
+                                    scrapsCollected += 10;
+                                    if (scrapsCollected >= 100) { scrapsCollected -= 100; player.lives++; }
                                 }
                             }
                         }
-                        else if (p.type === 'gear') {
-                            let cx = p.x + p.width / 2; let cy = p.y + p.height / 2; let radius = p.width / 2; let dx = (player.x + player.width / 2) - cx;
-                            if (Math.abs(dx) <= radius) {
-                                let arcY = cy - Math.sqrt(radius * radius - dx * dx);
-                                if (player.dy >= 0 && player.y + player.height >= arcY - 20 && player.lastY + player.height <= arcY + 50) {
-                                    player.y = arcY - player.height; player.dy = 0; player.grounded = true; player.jumpCount = 0; player.x += p.speed * radius;
-                                }
+                    }
+                    else if (p.type === 'gear') {
+                        let cx = p.x + p.width / 2; let cy = p.y + p.height / 2; let radius = p.width / 2; let dx = (player.x + player.width / 2) - cx;
+                        if (Math.abs(dx) <= radius) {
+                            let arcY = cy - Math.sqrt(radius * radius - dx * dx);
+                            if (player.dy >= 0 && player.y + player.height >= arcY - 20 && player.lastY + player.height <= arcY + 50) {
+                                player.y = arcY - player.height; player.dy = 0; player.grounded = true; player.jumpCount = 0; player.x += p.speed * radius;
                             }
+                        }
+                    }
+                    // BOČNÍ KOLIZE: pokud hráč je UVNITŘ solidní platformy, vytlač ho ven
+                    else if (isSolid && overlapY) {
+                        let playerCenterX = player.x + player.width / 2;
+                        let platCenterX = p.x + p.width / 2;
+                        if (playerCenterX < platCenterX) {
+                            player.x = p.x - player.width;
+                        } else {
+                            player.x = p.x + p.width;
                         }
                     }
                 }
