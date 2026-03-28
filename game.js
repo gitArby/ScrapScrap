@@ -110,6 +110,14 @@ const firebaseConfig = {
 };
 
 firebase.initializeApp(firebaseConfig);
+
+// Aktivace Firebase App Check přes reCAPTCHA v3
+const appCheck = firebase.appCheck();
+appCheck.activate(
+  '6LcR25ssAAAAAM0pmYyh9Pmec8S5atPgrCa19m9i',
+  true // Umožňuje automatický refresh tokenu
+);
+
 const db = firebase.firestore();
 
 let playerName = "ROBOT_" + Math.floor(Math.random() * 999);
