@@ -1601,9 +1601,18 @@
 
             if (player.isGolden && blinkOn) { ctx.shadowColor = 'gold'; ctx.shadowBlur = 30; }
 
-            if (blinkOn) {
-                if (!player.facingRight) { ctx.scale(-1, 1); ctx.drawImage(currentImg, -(player.x - cameraX) - player.width, player.y - cameraY, player.width, player.height); }
-                else { ctx.drawImage(currentImg, player.x - cameraX, player.y - cameraY, player.width, player.height); }
+            if (blinkOn && currentImg.complete && currentImg.naturalWidth > 0) {
+                // Správný poměr stran: výška = player.height, šířka podle poměru obrázku
+                let imgRatio = currentImg.naturalWidth / currentImg.naturalHeight;
+                let drawH = player.height;
+                let drawW = drawH * imgRatio;
+                // Vycentrovat horizontálně na hitbox hráče
+                let offsetX = (player.width - drawW) / 2;
+                let drawX = player.x - cameraX + offsetX;
+                let drawY = player.y - cameraY;
+
+                if (!player.facingRight) { ctx.scale(-1, 1); ctx.drawImage(currentImg, -drawX - drawW, drawY, drawW, drawH); }
+                else { ctx.drawImage(currentImg, drawX, drawY, drawW, drawH); }
             }
             ctx.restore();
 
