@@ -127,6 +127,7 @@
     );
 
     const db = firebase.firestore();
+    const serverTimestamp = firebase.firestore.FieldValue.serverTimestamp;
 
     // Vymazani firebase z globalniho scope, aby nesel vyjet cely obsah databaze z konzole
     delete window.firebase;
@@ -162,7 +163,7 @@
             score: score,
             timeSpent: timeSpent,
             token: token,
-            timestamp: firebase.firestore.FieldValue.serverTimestamp()
+            timestamp: serverTimestamp()
         }).catch(err => console.error("Firebase chyba ukládání skóre:", err));
     }
 
