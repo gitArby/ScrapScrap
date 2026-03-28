@@ -177,7 +177,7 @@
         if (gameState === 'GAMEOVER_INPUT') {
             if (e.key === 'Enter' && playerName.length > 0) {
                 let finalScore = totalScore + Math.floor(maxDistance / 10) + bonusScore;
-                saveScore(finalScore);
+                try { saveScore(finalScore); } catch (err) { console.error("Chyba ukládání:", err); }
                 gameState = 'LEADERBOARD';
             } else if (e.key === 'Backspace') {
                 playerName = playerName.slice(0, -1);
