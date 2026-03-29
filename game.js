@@ -199,6 +199,7 @@
                 player.dy = -player.jumpForce;
                 player.grounded = false;
                 player.jumpCount = 1;
+                player.jumpPhaseTimer = 0;
                 playSound(jumpSound);
             } else if (player.jumpCount < 2) {
                 player.dy = -player.jumpForce * 0.8;
@@ -1587,14 +1588,25 @@
             }
             ctx.restore();
 
-            // Výběr správného sprite: skok nahoru / pád dolů / běh
+            // Výběr správného sprite: jump1 (odraz) / jump (stoupání) / fall (padání) / běh
+            // Fáze: jump1 (prvních pár framů po skoku) → jump (stoupání) → fall (klesání)
             let currentImg;
-            if (!player.grounded && player.dy < -2) {
-                currentImg = jumpImg;
-            } else if (!player.grounded && player.dy > 2) {
-                currentImg = fallImg;
+            if (!player.grounded) {
+                if (player.jumpPhaseTimer !== undefined && player.jumpPhaseTimer < 6) {
+                    // Fáze jump1: krátký odrazový frame (run1)
+                    currentImg = runFrames[0];
+                    player.jumpPhaseTimer++;
+                } else if (player.dy < -1) {
+                    // Stoupání - jump sprite
+                    currentImg = jumpImg;
+                } else {
+                    // Padání - fall sprite
+                    currentImg = fallImg;
+                }
             } else {
                 currentImg = runFrames[player.frameIndex];
+                // Reset jump phase timeru po přistání
+                player.jumpPhaseTimer = undefined;
             }
             ctx.save();
             let blinkOn = !player.isInvincible || (Math.floor(Date.now() / 150) % 2 === 0);
@@ -1602,14 +1614,18 @@
             if (player.isGolden && blinkOn) { ctx.shadowColor = 'gold'; ctx.shadowBlur = 30; }
 
             if (blinkOn && currentImg.complete && currentImg.naturalWidth > 0) {
-                // Správný poměr stran: výška = player.height, šířka podle poměru obrázku
-                let imgRatio = currentImg.naturalWidth / currentImg.naturalHeight;
-                let drawH = player.height;
-                let drawW = drawH * imgRatio;
-                // Vycentrovat horizontálně na hitbox hráče
+                // Referenční velikost podle run sprite (153x233) pro konzistentní scale
+                let refW = runFrames[0].naturalWidth || 153;
+                let refH = runFrames[0].naturalHeight || 233;
+                let scale = player.height / refH;
+                // Všechny sprity se kreslí se stejným scale, takže robot má vždy stejnou velikost
+                let drawW = currentImg.naturalWidth * scale;
+                let drawH = currentImg.naturalHeight * scale;
+                // Vycentrovat horizontálně a zarovnat dolů (nohy na stejné místo)
                 let offsetX = (player.width - drawW) / 2;
+                let offsetY = player.height - drawH;
                 let drawX = player.x - cameraX + offsetX;
-                let drawY = player.y - cameraY;
+                let drawY = player.y - cameraY + offsetY;
 
                 if (!player.facingRight) { ctx.scale(-1, 1); ctx.drawImage(currentImg, -drawX - drawW, drawY, drawW, drawH); }
                 else { ctx.drawImage(currentImg, drawX, drawY, drawW, drawH); }
