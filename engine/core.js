@@ -40,8 +40,6 @@ const G = {
 
     debugPanel: false,
     debugHitboxes: false,
-    debugGodMode: false,
-    debugNoClip: false,
     debugSlowMo: false,
     debugFps: false,
     debugEntityCount: false,
