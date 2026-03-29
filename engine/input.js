@@ -12,8 +12,10 @@ window.addEventListener('keydown', function (e) {
         if (e.key === 'Enter' && G.playerName.length > 0) {
             var finalScore = G.totalScore + Math.floor(G.maxDistance / 10) + G.bonusScore;
             try { G.saveScore(finalScore); } catch (err) { console.error("Chyba ukládání:", err); }
+            G._deathCashedIn = undefined;
             G.gameState = 'MENU';
         } else if (e.key === 'Escape') {
+            G._deathCashedIn = undefined;
             G.gameState = 'MENU';
         } else if (e.key === 'Backspace') {
             G.playerName = G.playerName.slice(0, -1);

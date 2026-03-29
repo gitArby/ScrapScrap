@@ -6,8 +6,7 @@ G.updateCollectibles = function () {
     for (var i = 0; i < G.scraps.length; i++) {
         var sc = G.scraps[i];
         if (!sc.collected && G.Collision.overlaps(p, sc)) {
-            sc.collected = true; G.bonusScore += 10; G.scrapsCollected++;
-            if (G.scrapsCollected >= 100) { G.scrapsCollected -= 100; p.lives++; }
+            sc.collected = true; G.coinsThisLevel++;
         }
     }
 

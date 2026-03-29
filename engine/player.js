@@ -1,6 +1,4 @@
 G.takeDamage = function () {
-    if (G.debugGodMode || G.debugNoClip) return;
-
     var p = G.player;
     G.screenShake = 20;
     G.spawnParticles(p.x + p.width / 2, p.y + p.height / 2, 30, 'red', 'square');

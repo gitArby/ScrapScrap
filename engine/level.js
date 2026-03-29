@@ -266,7 +266,7 @@ G.restartLevel = function (fullReset) {
     p.jumpForce = p.isBig ? 25 : 22;
 
     p.isInvincible = false; p.invincibleTimer = 0; p.jumpCount = 0;
-    G.cameraX = 0; G.cameraY = 0; G.maxDistance = 0; G.bonusScore = 0;
+    G.cameraX = 0; G.cameraY = 0; G.maxDistance = 0; G.bonusScore = 0; G.coinsThisLevel = 0;
 };
 
 G.generateDemoLevel = function () {

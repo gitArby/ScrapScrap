@@ -5,10 +5,9 @@
 
     function gameLoop(timestamp) {
         requestAnimationFrame(gameLoop);
-        var effectiveInterval = G.debugSlowMo ? G.interval * 4 : G.interval;
         var deltaTime = timestamp - G.lastTime;
-        if (deltaTime > effectiveInterval) {
-            G.lastTime = timestamp - (deltaTime % effectiveInterval);
+        if (deltaTime > G.interval) {
+            G.lastTime = timestamp - (deltaTime % G.interval);
             update();
         }
     }

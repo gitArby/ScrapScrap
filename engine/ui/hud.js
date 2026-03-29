@@ -129,7 +129,7 @@ G.drawHUD = function () {
     ctx.fillStyle = HP.shine;
     ctx.font = "bold 11px 'Press Start 2P', monospace";
     ctx.textAlign = 'left'; ctx.textBaseline = 'middle';
-    ctx.fillText('' + G.scrapsCollected, barX + 36, barY + 25);
+    ctx.fillText('' + G.coinsThisLevel, barX + 36, barY + 25);
 
     // Score
     var currentScore = G.totalScore + Math.floor(G.maxDistance / 10) + G.bonusScore;
