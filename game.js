@@ -1614,18 +1614,15 @@
             if (player.isGolden && blinkOn) { ctx.shadowColor = 'gold'; ctx.shadowBlur = 30; }
 
             if (blinkOn && currentImg.complete && currentImg.naturalWidth > 0) {
-                // Referenční velikost podle run sprite (153x233) pro konzistentní scale
-                let refW = runFrames[0].naturalWidth || 153;
-                let refH = runFrames[0].naturalHeight || 233;
-                let scale = player.height / refH;
-                // Všechny sprity se kreslí se stejným scale, takže robot má vždy stejnou velikost
-                let drawW = currentImg.naturalWidth * scale;
-                let drawH = currentImg.naturalHeight * scale;
-                // Vycentrovat horizontálně a zarovnat dolů (nohy na stejné místo)
+                // Aby se vyhnulo "hubeňování" nebo "zmenšování" a robot zůstal neustále STEJNĚ VELIKÝ
+                // nastavíme fixní kreslící box nezávisle na skutečném nativním formátu obrázku (který se u jump/run/fall může drobně lišit).
+                let drawH = player.height;
+                let drawW = player.height * 0.75; // Fixní poměr zabrání "scvrkávání", jakéhokoliv spritu.
+
+                // Vycentrovat horizontálně
                 let offsetX = (player.width - drawW) / 2;
-                let offsetY = player.height - drawH;
                 let drawX = player.x - cameraX + offsetX;
-                let drawY = player.y - cameraY + offsetY;
+                let drawY = player.y - cameraY;
 
                 if (!player.facingRight) { ctx.scale(-1, 1); ctx.drawImage(currentImg, -drawX - drawW, drawY, drawW, drawH); }
                 else { ctx.drawImage(currentImg, drawX, drawY, drawW, drawH); }
