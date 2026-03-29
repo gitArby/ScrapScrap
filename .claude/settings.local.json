@@ -1,0 +1,25 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(ls -la /home/kopy/projects/ScrapScrap-kopy/*.png /home/kopy/projects/ScrapScrap-kopy/*.mp3)",
+      "Bash(grep:*)",
+      "Bash(ls -1 /home/kopy/projects/ScrapScrap-kopy/*.png /home/kopy/projects/ScrapScrap-kopy/*.mp3)",
+      "Bash(xargs -I {} basename {})",
+      "Bash(wc -l /home/kopy/projects/ScrapScrap-kopy/engine/*.js /home/kopy/projects/ScrapScrap-kopy/game.js)",
+      "Bash(chmod +x /home/kopy/projects/ScrapScrap-kopy/build.sh)",
+      "Bash(./build.sh)",
+      "Bash(wc:*)",
+      "Bash(python3 -c \"from PIL import Image; img = Image.open\\(''assets/images/tileset.png''\\); print\\(f''Size: {img.size[0]}x{img.size[1]}  Tiles: {img.size[0]//40} cols x {img.size[1]//40} rows''\\)\")",
+      "Bash(identify assets/images/tileset.png)",
+      "Bash(python3:*)",
+      "Bash(node:*)",
+      "Bash(find engine/ -name \"*.js\" -exec sed -i \"s/''bold \\\\\\([0-9]*\\\\\\)px ''Press Start 2P'', monospace''/\"\"bold \\\\1px ''Press Start 2P'', monospace\"\"/g\" {} +)",
+      "Bash(find engine/ -name \"*.js\" -exec sed -i \"s/''italic \\\\\\([0-9]*\\\\\\)px ''Press Start 2P'', monospace''/\"\"italic \\\\1px ''Press Start 2P'', monospace\"\"/g\" {} +)",
+      "Bash(find engine/ -name \"*.js\" -exec sed -i \"s/''\\\\\\([0-9]*\\\\\\)px ''Press Start 2P'', monospace''/\"\"\\\\1px ''Press Start 2P'', monospace\"\"/g\" {} +)",
+      "Bash(find engine/ -name \"*.js\" -exec sed -i \"s/''bold 50px ''Press Start 2P'', monospace''/\"\"bold 50px ''Press Start 2P'', monospace\"\"/g\" {} +)",
+      "Bash(for f:*)",
+      "Bash(do echo:*)",
+      "Bash(done)"
+    ]
+  }
+}
