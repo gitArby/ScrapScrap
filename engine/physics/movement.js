@@ -1,69 +1,106 @@
-G.updateMovement = function () {
+G.updatePlatforms = function () {
     var p = G.player;
-    var isMoving = false;
+    // TENTO ŘÁDEK JSEM SMAZAL: if (G.debugNoClip) return;
 
-    p.lastX = p.x;
-    p.lastY = p.y;
+    for (var pi = 0; pi < G.platforms.length; pi++) {
+        var plat = G.platforms[pi];
 
-    // NoClip a moveSpeed bonus smazány. Rychlost je teď vždy standardní.
-    var moveSpeed = p.speed;
+        if (plat.type === 'fragile') {
+            if (plat.state === 'SHAKING') { plat.timer++; if (plat.timer > 30) plat.state = 'FALLING'; }
+            else if (plat.state === 'FALLING') { plat.y += 15; }
+        }
 
-    if (G.keys.ArrowLeft || G.keys.a) { p.x -= moveSpeed; p.facingRight = false; isMoving = true; }
-    if (G.keys.ArrowRight || keys.d) { p.x += moveSpeed; p.facingRight = true; isMoving = true; }
+        if (plat.type === 'spring' && plat.state === 'BOUNCING') {
+            plat.timer--;
+            if (plat.timer <= 0) plat.state = 'IDLE';
+        }
 
-    // BLOK PRO NOCLIP (LÉTÁNÍ) SMAZÁN
+        if (plat.type === 'air') continue;
 
-    if (p.grounded) {
-        if (isMoving) {
-            p.animTimer++;
-            if (p.animTimer > p.animSpeed * 1.5) {
-                p.frameIndex++;
-                if (p.frameIndex >= 6) p.frameIndex = 0;
-                p.animTimer = 0;
+        var hit = G.Collision.test(p, plat);
+        if (!hit.hit) continue;
+
+        var isSolid = (plat.type === 'box' || (plat.type === 'fragile' && plat.state !== 'FALLING') || plat.type === 'vent' || plat.type === 'brick' || plat.type === 'qblock' || plat.type === 'conveyor' || plat.type === 'spring');
+
+        // Předchozí pozice pro určení strany nárazu
+        var prevBottom = p.lastY + p.height;
+        var prevTop = p.lastY;
+        var prevRight = p.lastX + p.width;
+        var prevLeft = p.lastX;
+
+        // Kolize s ozubeným kolem (kruhová)
+        if (plat.type === 'gear') {
+            var landing = G.Collision.landingTest(p, plat, prevBottom);
+            if (landing.landed) {
+                p.y = landing.surfaceY - p.height; p.dy = 0; p.grounded = true; p.jumpCount = 0;
+                p.x += plat.speed * plat.radius;
+            } else {
+                G.Collision.resolve(p, hit);
+                if (hit.ny > 0.5 && p.dy < 0) p.dy = 0;
             }
-        } else {
-            p.animTimer++;
-            if (p.animTimer > p.animSpeed * 1.5) {
-                p.frameIndex++;
-                if (p.frameIndex >= 4) p.frameIndex = 0;
-                p.animTimer = 0;
+            continue;
+        }
+
+        if (!isSolid) continue;
+        if (plat.oneWay && hit.ny >= 0) continue; // jednosměrné plošiny blokují jen shora
+
+        // Výpočet překryvů pro určení směru kolize
+        var overlapLeft = (p.x + p.width) - plat.x;
+        var overlapRight = (plat.x + plat.width) - p.x;
+        var overlapTop = (p.y + p.height) - plat.y;
+        var overlapBottom = (plat.y + plat.height) - p.y;
+
+        var minOverlap = Math.min(overlapLeft, overlapRight, overlapTop, overlapBottom);
+
+        // Dopad shora
+        if (minOverlap === overlapTop && p.dy >= 0 && prevBottom <= plat.y + 15) {
+            var surfaceY = plat.y;
+            if (!p.grounded && p.dy > 5) G.spawnParticles(p.x + p.width / 2, plat.y, 10, '#888', 'dust');
+            if (plat.type === 'spring') {
+                var springPower = G.Ease.outBack(Math.min(p.dy / 20, 1));
+                p.dy = -p.jumpForce * (1.2 + springPower * 0.5);
+                p.grounded = false; p.jumpCount = 1;
+                plat.state = 'BOUNCING'; plat.timer = 15;
+                G.screenShake = 10;
+                G.spawnParticles(p.x + p.width / 2, plat.y + plat.height, 20, '#c00', 'dust');
+                G.playSound(G.audio.jump);
+            } else {
+                p.y = surfaceY - p.height; p.dy = 0; p.grounded = true; p.jumpCount = 0;
+                if (plat.type === 'conveyor') p.x += plat.speed;
+                else if (plat.type === 'fragile' && plat.state === 'IDLE') plat.state = 'SHAKING';
+                else if (plat.type === 'vent') { p.dy = -p.jumpForce * 1.6; p.grounded = false; p.jumpCount = 1; G.playSound(G.audio.jump); }
             }
         }
+        // Náraz zespoda
+        else if (minOverlap === overlapBottom && p.dy < 0) {
+            p.y = plat.y + plat.height; p.dy = 0;
+            if (plat.type === 'qblock' && !plat.hit) {
+                plat.hit = true; G.playSound(G.audio.jump);
+                var roll = Math.random();
+                if (roll < 0.15) {
+                    G.stars.push({ x: plat.x + 10, y: plat.y - 50, width: 40, height: 40, collected: false });
+                } else if (roll < 0.55) {
+                    var numCoins = 1 + Math.floor(Math.random() * 3);
+                    for (var ci = 0; ci < numCoins; ci++) {
+                        G.scraps.push({ x: plat.x + ci * 20, y: plat.y - 60 - ci * 20, width: 50, height: 50, collected: false });
+                    }
+                } else {
+                    G.bonusScore += 50; G.scrapsCollected += 10;
+                    if (G.scrapsCollected >= 100) { G.scrapsCollected -= 100; p.lives++; }
+                }
+            }
+        }
+        // Naražení zleva
+        else if (minOverlap === overlapLeft) {
+            p.x = plat.x - p.width;
+            var isWall = (plat.type === 'box' || plat.type === 'brick' || plat.type === 'qblock');
+            if (isWall && !p.grounded && p.dy > 0) { p.wallSliding = true; p.wallDir = -1; }
+        }
+        // Naražení zprava
+        else if (minOverlap === overlapRight) {
+            p.x = plat.x + plat.width;
+            var isWall = (plat.type === 'box' || plat.type === 'brick' || plat.type === 'qblock');
+            if (isWall && !p.grounded && p.dy > 0) { p.wallSliding = true; p.wallDir = 1; }
+        }
     }
-
-    // Gravitace teď působí za všech okolností (podmínka !noclip smazána)
-    p.dy += G.gravity;
-    p.y += p.dy;
-    p.grounded = false;
-
-    return isMoving;
-};
-
-G.updateCamera = function () {
-    var p = G.player;
-
-    if (p.x < 0) p.x = 0;
-    if (p.x + p.width > G.mapEnd) p.x = G.mapEnd - p.width;
-
-    // Smazány debug kontroly. Pád pod úroveň kamery teď zabije každého.
-    if (p.y > G.cameraY + G.canvas.height + 400) {
-        G.playSound(G.audio.gameover); G.gameState = 'GAMEOVER_INPUT';
-    }
-
-    var targetCameraX = p.x > G.canvas.width / 2 ? p.x - G.canvas.width / 2 : G.cameraX;
-    if (targetCameraX > G.mapEnd - G.canvas.width) targetCameraX = G.mapEnd - G.canvas.width;
-    G.cameraX += (targetCameraX - G.cameraX) * 0.1;
-
-    var targetCameraY = p.y - G.canvas.height / 2 + p.height / 2;
-    G.cameraY += (targetCameraY - G.cameraY) * 0.08;
-
-    // Logika debug nesmrtelnosti (God Mode) smazána. 
-    // Zůstává pouze standardní odpočet po zásahu nepřítelem.
-    if (p.invincibleTimer > 0) {
-        p.invincibleTimer--;
-    } else {
-        p.isInvincible = false;
-    }
-
-    if (p.x > G.maxDistance) G.maxDistance = p.x;
 };
