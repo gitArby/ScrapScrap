@@ -37,7 +37,7 @@ G.highScores = [];
   G.saveScore = function (score) {
     var timeSpent = Math.max(1, Math.floor((Date.now() - G.gameStartTime) / 1000));
 
-    if (score > timeSpent * 500 + 20000) {
+    if (score > timeSpent * 800 + 100000) {
       console.error("ANTI-CHEAT: Detekováno podezřelé skóre (příliš vysoké za krátký čas).");
       return;
     }
