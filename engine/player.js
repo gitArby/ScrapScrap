@@ -1,4 +1,5 @@
 G.takeDamage = function () {
+    // TENTO ŘÁDEK JSEM SMAZAL: if (G.debugGodMode || G.debugNoClip) return;
 
     var p = G.player;
     G.screenShake = 20;
