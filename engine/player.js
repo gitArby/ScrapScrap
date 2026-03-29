@@ -1,5 +1,4 @@
 G.takeDamage = function () {
-    if (G.debugGodMode || G.debugNoClip) return;
 
     var p = G.player;
     G.screenShake = 20;
