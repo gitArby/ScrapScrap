@@ -34,7 +34,7 @@
     // 1. OBRÁZKY A ASSET LOADING
     // ---------------------------------------------------------
     let assetsLoaded = 0;
-    const totalAssets = 9;
+    const totalAssets = 4;
 
     function assetLoaded() {
         assetsLoaded++;
@@ -97,21 +97,13 @@
     factoryBg.src = 'factory.png';
     factoryBg.onload = assetLoaded;
 
-    const runFrames = [];
-    for (let i = 1; i <= 5; i++) {
-        let img = new Image();
-        img.src = 'run' + i + '.png';
-        img.onload = assetLoaded;
-        runFrames.push(img);
-    }
+    const idleImg = new Image();
+    idleImg.src = 'Idle.png';
+    idleImg.onload = assetLoaded;
 
-    const jumpImg = new Image();
-    jumpImg.src = 'jump.png';
-    jumpImg.onload = assetLoaded;
-
-    const fallImg = new Image();
-    fallImg.src = 'fall.png';
-    fallImg.onload = assetLoaded;
+    const runSheetImg = new Image();
+    runSheetImg.src = 'run-sheet.png';
+    runSheetImg.onload = assetLoaded;
 
     // ---------------------------------------------------------
     // 2. HRÁČ, MYŠ A SKÓRE
@@ -156,15 +148,17 @@
     function saveScore(score) {
         let timeSpent = Math.max(1, Math.floor((Date.now() - gameStartTime) / 1000));
 
-        // Základní Anti-Cheat ochrana rychlosti zisku skóre (500 základ + 100 za sekundu max)
-        if (score > (timeSpent * 100) + 500) {
+        // Zmírněná Anti-Cheat ochrana (aby nebrzdila poctivé hráče při zabití bosse)
+        // Boss dává 10000, proto základ zvýšen na 20000 + 500 za každou sekundu
+        if (score > (timeSpent * 500) + 20000) {
             console.error("ANTI-CHEAT: Detekováno podezřelé skóre (příliš vysoké za krátký čas).");
             return;
         }
 
         // Generování jednoduchého obfuskovaného tokenu proti zápisu přes obyčejnou DB query
         let secret = "_SCRaP_SEcrET_2026!_";
-        let token = btoa(playerName + "_" + score + "_" + timeSpent + secret);
+        // encodeURIComponent pro jistotu, kdyby si hráč do jména napsal českou diakritiku, při které normální btoa spadne
+        let token = btoa(encodeURIComponent(playerName + "_" + score + "_" + timeSpent + secret));
 
         db.collection('scores').add({
             name: playerName,
@@ -997,9 +991,29 @@
                 if (keys.ArrowLeft || keys.a) { player.x -= player.speed; player.facingRight = false; isMoving = true; }
                 if (keys.ArrowRight || keys.d) { player.x += player.speed; player.facingRight = true; isMoving = true; }
 
-                if (isMoving && player.grounded) {
-                    player.animTimer++; if (player.animTimer > player.animSpeed) { player.frameIndex++; if (player.frameIndex >= runFrames.length) player.frameIndex = 0; player.animTimer = 0; }
-                } else { player.frameIndex = 0; }
+                // Přehrávání animace na zemi
+                if (player.grounded) {
+                    if (isMoving) {
+                        // Když běží, přehráváme run-sheet (4 framy)
+                        player.animTimer++;
+                        if (player.animTimer > player.animSpeed * 1.5) { // Trochu zpomalíme aby běh nebyl moc rychlý, nebo dle potřeby
+                            player.frameIndex++;
+                            if (player.frameIndex >= 4) player.frameIndex = 0;
+                            player.animTimer = 0;
+                        }
+                    } else {
+                        // Když stojí na místě (IDLE) - přehrajeme nahranou animaci (8 framů)
+                        player.animTimer++;
+                        if (player.animTimer > player.animSpeed * 1.5) {
+                            player.frameIndex++;
+                            // Ochrana - pokud přešel z běhů (např f=3) a teď jede idle f=4,5,6,7.. je to ok.
+                            if (player.frameIndex >= 8) player.frameIndex = 0;
+                            player.animTimer = 0;
+                        }
+                    }
+                } else {
+                    // Ve vzduchu obstaráváme frame v kreslící funkci (jump/fall)
+                }
 
                 player.lastX = player.x;
                 player.lastY = player.y; player.dy += gravity; player.y += player.dy; player.grounded = false;
@@ -1588,44 +1602,67 @@
             }
             ctx.restore();
 
-            // Výběr správného sprite: jump1 (odraz) / jump (stoupání) / fall (padání) / běh
-            // Fáze: jump1 (prvních pár framů po skoku) → jump (stoupání) → fall (klesání)
-            let currentImg;
+            // Výběr správného frame a obrázku
+            let drawFrame = player.frameIndex;
+            let currentImg = idleImg; // Defaultní pro stání
+
             if (!player.grounded) {
+                // Přepneme na runSheetImg pro skoky (má sice 4 framy, zkusíme použít vhodné pro skok/pád)
+                currentImg = runSheetImg;
                 if (player.jumpPhaseTimer !== undefined && player.jumpPhaseTimer < 6) {
-                    // Fáze jump1: krátký odrazový frame (run1)
-                    currentImg = runFrames[0];
+                    drawFrame = 0; // Odraz
                     player.jumpPhaseTimer++;
                 } else if (player.dy < -1) {
-                    // Stoupání - jump sprite
-                    currentImg = jumpImg;
+                    drawFrame = 1; // Skok
                 } else {
-                    // Padání - fall sprite
-                    currentImg = fallImg;
+                    drawFrame = 2; // Pád
                 }
             } else {
-                currentImg = runFrames[player.frameIndex];
-                // Reset jump phase timeru po přistání
+                drawFrame = player.frameIndex;
                 player.jumpPhaseTimer = undefined;
+                if (isMoving) {
+                    // Cíleně přepneme na běhací spritesheet
+                    currentImg = runSheetImg;
+                }
             }
+
+            // --- DEBUG: Hitbox (dočasně pro vyladění offsetů) ---
+            // ctx.strokeStyle = 'red'; 
+            // ctx.lineWidth = 2;
+            // ctx.strokeRect(player.x - cameraX, player.y - cameraY, player.width, player.height);
+
             ctx.save();
             let blinkOn = !player.isInvincible || (Math.floor(Date.now() / 150) % 2 === 0);
 
             if (player.isGolden && blinkOn) { ctx.shadowColor = 'gold'; ctx.shadowBlur = 30; }
 
             if (blinkOn && currentImg.complete && currentImg.naturalWidth > 0) {
-                // Aby se vyhnulo "hubeňování" nebo "zmenšování" a robot zůstal neustále STEJNĚ VELIKÝ
-                // nastavíme fixní kreslící box nezávisle na skutečném nativním formátu obrázku (který se u jump/run/fall může drobně lišit).
-                let drawH = player.height;
-                let drawW = player.height * 0.75; // Fixní poměr zabrání "scvrkávání", jakéhokoliv spritu.
+                // Konfigurace rozměrů frame
+                let frameWidth = 53;
+                let frameHeight = 95;
+                let sx = drawFrame * frameWidth;
+                let sy = 0;
 
-                // Vycentrovat horizontálně
-                let offsetX = (player.width - drawW) / 2;
+                // --- LADĚNÍ OFFSETŮ A VELIKOSTI ---
+                // Pokud je postavička "mimo", upravíme tyto hodnoty:
+                let spriteScale = 1.0; // Zvětšení/zmenšení vizuálního spritu (1.0 = rozměr hitboxu)
+                let spr_offsetX = 0;   // Horizontální posun (+ doprava, - doleva)
+                let spr_offsetY = 0;   // Vertikální posun (+ dolů, - nahoru)
+
+                let drawH = player.height * spriteScale;
+                let drawW = (frameWidth / frameHeight) * drawH;
+
+                // Výpočet pozice pro vycentrování a aplikaci offsetů
+                let offsetX = (player.width - drawW) / 2 + spr_offsetX;
                 let drawX = player.x - cameraX + offsetX;
-                let drawY = player.y - cameraY;
+                let drawY = player.y - cameraY + (player.height - drawH) + spr_offsetY;
 
-                if (!player.facingRight) { ctx.scale(-1, 1); ctx.drawImage(currentImg, -drawX - drawW, drawY, drawW, drawH); }
-                else { ctx.drawImage(currentImg, drawX, drawY, drawW, drawH); }
+                if (!player.facingRight) {
+                    ctx.scale(-1, 1);
+                    ctx.drawImage(currentImg, sx, sy, frameWidth, frameHeight, -drawX - drawW, drawY, drawW, drawH);
+                } else {
+                    ctx.drawImage(currentImg, sx, sy, frameWidth, frameHeight, drawX, drawY, drawW, drawH);
+                }
             }
             ctx.restore();
 
