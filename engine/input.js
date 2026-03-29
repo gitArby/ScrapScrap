@@ -2,9 +2,6 @@ G.keys = { ArrowLeft: false, ArrowRight: false, ArrowUp: false, a: false, d: fal
 
 G.mouse = { x: 0, y: 0, clicked: false };
 
-window.addEventListener('keydown', function (e) {
-    if (e.key === 'F8') { e.preventDefault(); G.debugPanel = !G.debugPanel; return; }
-
     var normalizedKey = e.key.length === 1 ? e.key.toLowerCase() : e.key;
     if (G.keys.hasOwnProperty(normalizedKey)) G.keys[normalizedKey] = true;
 
