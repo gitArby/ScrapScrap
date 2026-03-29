@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ScrapScrap</title>
     <link rel="stylesheet" href="style.css">
-    <link rel="icon" type="image/x-icon" href="icon.ico">
+    <link rel="icon" type="image/x-icon" href="assets/images/icon.ico">
 
 </head>
 
@@ -17,7 +17,47 @@
     <script src="https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore-compat.js"></script>
 
     <canvas id="gameCanvas" width="800" height="600"></canvas>
-    <script src="game.min.js?v=202603291235"></script>
+
+    <!-- Engine + Config -->
+    <script src="engine/core.js"></script>
+    <script src="config.js"></script>
+    <script src="engine/rigidbody.js"></script>
+    <script src="engine/easing.js"></script>
+    <script src="engine/assets.js"></script>
+    <script src="engine/input.js"></script>
+    <script src="engine/firebase.js"></script>
+    <script src="engine/player.js"></script>
+    <script src="engine/entity.js"></script>
+    <script src="engine/level.js"></script>
+    <script src="engine/tiles.js"></script>
+    <script src="engine/renderer.js"></script>
+    <!-- Physics modules -->
+    <script src="engine/physics/movement.js"></script>
+    <script src="engine/physics/platforms.js"></script>
+    <script src="engine/physics/collectibles.js"></script>
+    <script src="engine/physics/turrets.js"></script>
+    <script src="engine/physics/drones.js"></script>
+    <script src="engine/physics/bullets.js"></script>
+    <script src="engine/physics/sawblades.js"></script>
+    <script src="engine/physics/lasers.js"></script>
+    <script src="engine/physics/traps.js"></script>
+    <script src="engine/physics/rcs.js"></script>
+    <script src="engine/physics/particles.js"></script>
+    <script src="engine/physics/boss.js"></script>
+    <script src="engine/physics.js"></script>
+
+    <!-- UI Pages -->
+    <script src="engine/ui/menu.js"></script>
+    <script src="engine/ui/settings.js"></script>
+    <script src="engine/ui/credits.js"></script>
+    <script src="engine/ui/gameover.js"></script>
+    <script src="engine/ui/leaderboard.js"></script>
+    <script src="engine/ui/victory.js"></script>
+    <script src="engine/ui/hud.js"></script>
+    <script src="engine/ui/debug.js"></script>
+
+    <!-- Game -->
+    <script src="game.js"></script>
 </body>
 
 </html>

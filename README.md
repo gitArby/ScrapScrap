@@ -36,12 +36,12 @@ Hru si můžete zahrát okamžitě několika způsoby:
 ---
 
 ## 📂 Obsah dokumentace
-1. [Základní koncepce](01_zakladni_koncepce.md)
-2. [Game Design](02_game_design.md)
-3. [Grafika](03_grafika.md)
-4. [Audio](04_audio.md)
-5. [Koncepty a vývoj](05_koncepty.md)
-6. [Hratelné Demo](06_demo.md)
+1. [Základní koncepce](docs/01_zakladni_koncepce.md)
+2. [Game Design](docs/02_game_design.md)
+3. [Grafika](docs/03_grafika.md)
+4. [Audio](docs/04_audio.md)
+5. [Koncepty a vývoj](docs/05_koncepty.md)
+6. [Hratelné Demo](docs/06_demo.md)
 
 ---
 
